@@ -1,0 +1,13 @@
+.npmignore
+.gitignore
+.vscode
+.github
+
+Readme.md
+
+test
+img
+
+
+src/
+*.json
