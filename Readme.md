@@ -61,14 +61,14 @@ async () => {
 
 ## Options
 
-| Parameter           | Type                                                                                                      | Defaut value        | Description                                                                                                                                                                                                                                           |
-| ------------------- | --------------------------------------------------------------------------------------------------------- | ------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| database            | String                                                                                                    | `bot-storage`       | database name in mongodb                                                                                                                                                                                                                              |
-| collection          | String                                                                                                    | `conversations`     | collection name to store states                                                                                                                                                                                                                       |
-| mongo               | [MongoOptions](https://docs.mongodb.com/drivers/node/current/fundamentals/connection/#connection-options) | `-`                 | optional mongo connection options                                                                                                                                                                                                                     |
-| redis               | [RedisOptions](https://redis.js.org/documentation/client/interfaces/lib_client.RedisClientOptions.html)   | `-`                 | optional cache redis options                                                                                                                                                                                                                          |
-| cacheExpiration     | Number                                                                                                    | `1209600` - 14 days | optonal TTL in seconds for redis cached state <br />(14 days is default Microsoft direcline conversation inactivity expiration time)                                                                                                                  |
-| disableWriteConcern | Boolean                                                                                                   | `false`             | optional only when using redis mongodb queries will be executed with `writeConcern: { w: 0 }` for perfomance.<br />To disable this behaviour change value to `true` [more details](https://docs.mongodb.com/manual/reference/write-concern/#w-option) |
+| Parameter           | Type                                                         | Defaut value                              | Description                                                  |
+| ------------------- | ------------------------------------------------------------ | ----------------------------------------- | ------------------------------------------------------------ |
+| database            | String                                                       | `bot-storage`                             | database name in mongodb                                     |
+| collection          | String                                                       | `conversations`                           | collection name to store states                              |
+| mongo               | [MongoOptions](https://docs.mongodb.com/drivers/node/current/fundamentals/connection/#connection-options) | `-`                                       | optional mongo connection options                            |
+| redis               | [RedisOptions](https://redis.js.org/documentation/client/interfaces/lib_client.RedisClientOptions.html) | `-`                                       | optional cache redis options                                 |
+| cacheExpiration     | Number                                                       | `1209600` - 14 days                       | optonal TTL in seconds for redis cached state <br />(14 days is default Microsoft direcline conversation inactivity expiration time) |
+| disableWriteConcern | Boolean                                                      | `false`(w/ redis)<br />`true` (w/o redid) | optional only when using redis, mongodb queries will be executed with `writeConcern: { w: 0 }` for betternperfomance.<br /> [more details](https://docs.mongodb.com/manual/reference/write-concern/#w-option) |
 
 ## Advanced Usage
 
@@ -107,5 +107,3 @@ async () => {
   });
 };
 ```
-
-## Table of Contents

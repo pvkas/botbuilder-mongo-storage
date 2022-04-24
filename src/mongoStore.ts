@@ -7,6 +7,8 @@ export interface MongoStoreOptions {
   collection?: string;
   mongo?: MongoClientOptions;
   redis?: RedisClientOptions;
+  cacheExpiration?: number;
+  disableWriteConcern?: boolean;
 }
 
 interface StorageConnectResponse {
@@ -42,6 +44,10 @@ export class MongoStore implements Storage {
 
   private rClient!: RedisClientType;
 
+  private cacheExpiration: number;
+
+  private disableWriteConcern: boolean;
+
   public static readonly NO_URL_ERROR: Error = new Error('MongoStore.uri is required.');
 
   static readonly DEFAULT_DATABASE_NAME = 'botstorage';
@@ -49,6 +55,8 @@ export class MongoStore implements Storage {
   static readonly DEFAULT_COLLECTION_NAME = 'conversations';
 
   static readonly DEFAULT_DOCUMENT_KEY = '_id';
+
+  static readonly DEFAULT_CACHE_EXPIRATION_TIME = 1209600;
 
   constructor(uri: string, options: MongoStoreOptions = {}) {
     // throw error if configs are missing
@@ -61,6 +69,8 @@ export class MongoStore implements Storage {
     this.colName = MongoStore.DEFAULT_COLLECTION_NAME;
     this.key = MongoStore.DEFAULT_DOCUMENT_KEY;
     this.isCacheEnabled = false;
+    this.cacheExpiration = options.cacheExpiration || MongoStore.DEFAULT_CACHE_EXPIRATION_TIME;
+    this.disableWriteConcern = options.disableWriteConcern || false;
 
     // Options
     const { database, collection, redis: redisOptions, mongo: mongoOptions } = options;
@@ -187,7 +197,7 @@ export class MongoStore implements Storage {
     const writeOperations = Object.keys(changes).map(async (key) => {
       const state = changes[key];
       await this.cache.set(key, JSON.stringify(state), {
-        EX: 14 * 24 * 60 * 60 * 60,
+        EX: this.cacheExpiration,
       });
     });
     await Promise.all(writeOperations);
@@ -212,11 +222,9 @@ export class MongoStore implements Storage {
         },
       });
     });
-    try {
-      await this.storage.bulkWrite(operations, {
-        writeConcern: { w: 0 },
-      });
-    } catch (error) {}
+    await this.storage.bulkWrite(operations, {
+      writeConcern: !this.disableWriteConcern ? { w: 0 } : { w: 'majority' },
+    });
   }
 
   private async deleteRedis(stateKeys: string[]): Promise<void> {
@@ -225,28 +233,27 @@ export class MongoStore implements Storage {
   }
 
   private async deleteMongo(stateKeys: string[]): Promise<void> {
-    await this.storage.deleteMany({ [this.key]: { $in: stateKeys } }, { writeConcern: { w: 0 } });
+    await this.storage.deleteMany(
+      { [this.key]: { $in: stateKeys } },
+      { writeConcern: !this.disableWriteConcern ? { w: 0 } : { w: 'majority' } }
+    );
   }
 
   // should always return result
   public async health(): Promise<IPingResponse> {
     const ping: IPingResponse = { ok: 0, mongo: 0 };
-    try {
-      const mongoResponse = await this.mClient.db(this.dbName).admin().command({ ping: 1 });
-      this.rClient.ping();
-      if (mongoResponse && mongoResponse.ok) {
-        ping.mongo = 1;
-      }
-    } catch {}
+    const mongoResponse = await this.mClient.db(this.dbName).admin().command({ ping: 1 });
+    this.rClient.ping();
+    if (mongoResponse && mongoResponse.ok) {
+      ping.mongo = 1;
+    }
 
     if (this.isCacheEnabled) {
       ping.redis = 0;
-      try {
-        const redisResponse = await this.rClient.ping();
-        if (redisResponse) {
-          ping.redis = 1;
-        }
-      } catch {}
+      const redisResponse = await this.rClient.ping();
+      if (redisResponse) {
+        ping.redis = 1;
+      }
     }
 
     ping.ok = ping.mongo;
