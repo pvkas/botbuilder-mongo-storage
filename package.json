@@ -18,8 +18,8 @@
   "author": "Vikas Padaliya <vikas13padaliya@gmail.com>",
   "license": "GPL-3.0",
   "dependencies": {
-    "@node-redis/client": "^1.0.4",
-    "mongodb": "^4.4.1"
+    "@node-redis/client": "^1.0.6",
+    "mongodb": "^4.5.0"
   },
   "files": [
     "/lib",
