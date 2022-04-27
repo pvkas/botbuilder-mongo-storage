@@ -45,7 +45,8 @@ const options = {
   database: 'foobar',
   collection: 'conversations',
   redis: {
-    url: 'redis://alice:foobared@localhost:6380',
+    url: 'redis://localhost:6380', // "rediss://..." - for TLS
+    password: 'foobared'
   },
 };
 
@@ -78,7 +79,8 @@ const storageOptions = {
   database: 'bot',
   collection: 'conversations',
   redis: {
-    url: 'redis://alice:foobared@localhost:6380',
+    url: 'redis://localhost:6380', // "rediss://..." - for TLS
+    password: 'foobared'
   },
   mongo: {
     tls: true,
