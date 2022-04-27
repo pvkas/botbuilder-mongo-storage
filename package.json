@@ -1,6 +1,6 @@
 {
   "name": "botbuilder-mongo-storage",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "description": "Botbuilder MongoDB (+Redis Cached) Storage",
   "main": "./lib/index.js",
   "typings": "./lib/index.d.ts",
