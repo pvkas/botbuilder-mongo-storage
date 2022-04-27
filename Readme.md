@@ -8,11 +8,9 @@
   - [Installation](#installation)
   - [Usage](#usage)
   - [Options](#options)
-  - [Advanced Usage](#advanced-usage)
-- Description
-  - Cache Usage
+  - [Advanced Usages](#advanced-usages)
 - FAQ
-  - Why ?
+  - [Why ?](#why)
 
 ## Installation:
 
@@ -31,12 +29,12 @@ const options = {
   collection: 'conversations',
 };
 
-async () => {
+(async () => {
   // storage
   const storage = new MongoStore('mongodb://localhost:27017/', options);
   await storage.connect();
   const conversationState = new ConversationState(storage);
-};
+})();
 ```
 
 #### Redis Cache ([redis options](https://redis.js.org/documentation/client/interfaces/lib_client.RedisClientOptions.html))
@@ -51,12 +49,12 @@ const options = {
   },
 };
 
-async () => {
+(async () => {
   // storage
   const storage = new MongoStore('mongodb://localhost:27017/', options);
   await storage.connect();
   const conversationState = new ConversationState(storage);
-};
+})();
 ```
 
 ## Options
@@ -67,10 +65,12 @@ async () => {
 | collection          | String                                                       | `conversations`                           | collection name to store states                              |
 | mongo               | [MongoOptions](https://docs.mongodb.com/drivers/node/current/fundamentals/connection/#connection-options) | `-`                                       | optional mongo connection options                            |
 | redis               | [RedisOptions](https://redis.js.org/documentation/client/interfaces/lib_client.RedisClientOptions.html) | `-`                                       | optional cache redis options                                 |
-| cacheExpiration     | Number                                                       | `1209600` - 14 days                       | optonal TTL in seconds for redis cached state <br />(14 days is default Microsoft direcline conversation inactivity expiration time) |
-| disableWriteConcern | Boolean                                                      | `false`(w/ redis)<br />`true` (w/o redis) | optional only when using redis, mongodb queries will be executed with `writeConcern: { w: 0 }` for betternperfomance.<br /> [more details](https://docs.mongodb.com/manual/reference/write-concern/#w-option) |
+| cacheExpiration     | Number                                                       | `1209600` - 14 days                       | optional TTL in seconds for redis cached state <br />(14 days is default Microsoft direcline conversation inactivity expiration time) |
+| disableWriteConcern | Boolean                                                      | `false`(w/ redis)<br />`true` (w/o redis) | optional only when using redis, mongodb queries will be executed with `writeConcern: { w: 0 }` for better perfomance.<br /> [more details](https://docs.mongodb.com/manual/reference/write-concern/#w-option) |
 
-## Advanced Usage
+## Advanced Usages
+
+#### 1. Health Check
 
 ```javascript
 // Options
@@ -86,7 +86,7 @@ const storageOptions = {
   cacheExpiration: 604800, // 7 days
 };
 
-async () => {
+(async () => {
   // storage
   const storage = new MongoStore('mongodb://localhost:27017/', storageOptions);
   await storage.connect();
@@ -105,5 +105,38 @@ async () => {
       storage: storageHealth,
     });
   });
-};
+})();
 ```
+
+#### 2. TTL Document Mongo
+
+```javascript
+// Options
+const storageOptions = {
+  database: 'bot',
+  collection: 'conversations',
+};
+
+(async () => {
+  // storage
+  const storage = new MongoStore('mongodb://localhost:27017/', storageOptions);
+  await storage.connect();
+  await storage.storage.createIndex(
+    { date: 1 },
+    { expireAfterSeconds: 14 * 24 * 60 * 60, background: true }
+  ); // TTL - Auto deletes document after 14 days
+  const conversationState = new ConversationState(storage);
+})();
+```
+
+
+
+## FAQ
+
+#### Why ?
+
+- Supports latest botbuilder framework
+- Built-in cache layer
+- Uses latest drivers for database and cache
+- Provides more flixble options for custom usage
+- Typescript support
