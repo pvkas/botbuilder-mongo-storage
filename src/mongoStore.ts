@@ -242,18 +242,22 @@ export class MongoStore implements Storage {
   // should always return result
   public async health(): Promise<IPingResponse> {
     const ping: IPingResponse = { ok: 0, mongo: 0 };
-    const mongoResponse = await this.mClient.db(this.dbName).admin().command({ ping: 1 });
-    this.rClient.ping();
-    if (mongoResponse && mongoResponse.ok) {
-      ping.mongo = 1;
-    }
+    try {
+      const mongoResponse = await this.mClient.db(this.dbName).admin().command({ ping: 1 });
+      this.rClient.ping();
+      if (mongoResponse && mongoResponse.ok) {
+        ping.mongo = 1;
+      }
+    } catch {}
 
     if (this.isCacheEnabled) {
       ping.redis = 0;
-      const redisResponse = await this.rClient.ping();
-      if (redisResponse) {
-        ping.redis = 1;
-      }
+      try {
+        const redisResponse = await this.rClient.ping();
+        if (redisResponse) {
+          ping.redis = 1;
+        }
+      } catch {}
     }
 
     ping.ok = ping.mongo;

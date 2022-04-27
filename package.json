@@ -1,6 +1,6 @@
 {
   "name": "botbuilder-mongo-storage",
-  "version": "1.0.3",
+  "version": "1.0.4",
   "description": "Botbuilder MongoDB (+Redis Cached) Storage",
   "main": "./lib/index.js",
   "typings": "./lib/index.d.ts",
@@ -13,7 +13,8 @@
     "storage",
     "mongo",
     "redis",
-    "botstorage"
+    "botstorage",
+    "botframework"
   ],
   "author": "Vikas Padaliya <vikas13padaliya@gmail.com>",
   "license": "GPL-3.0",
