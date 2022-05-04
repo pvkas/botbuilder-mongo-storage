@@ -66,7 +66,7 @@ const options = {
 | collection          | String                                                       | `conversations`                           | collection name to store states                              |
 | mongo               | [MongoOptions](https://docs.mongodb.com/drivers/node/current/fundamentals/connection/#connection-options) | `-`                                       | optional mongo connection options                            |
 | redis               | [RedisOptions](https://redis.js.org/documentation/client/interfaces/lib_client.RedisClientOptions.html) | `-`                                       | optional cache redis options                                 |
-| cacheExpiration     | Number                                                       | `1209600` - 14 days                       | optional TTL in seconds for redis cached state <br />(14 days is default Microsoft direcline conversation inactivity expiration time) |
+| cacheExpiration     | Number                                                       | `1209600` - 14 days                       | optional TTL in seconds for redis cached state <br />(14 days is default Microsoft directline conversation inactivity expiration time) |
 | disableWriteConcern | Boolean                                                      | `false`(w/ redis)<br />`true` (w/o redis) | optional only when using redis, mongodb queries will be executed with `writeConcern: { w: 0 }` for better perfomance.<br /> [more details](https://docs.mongodb.com/manual/reference/write-concern/#w-option) |
 
 ## Advanced Usages
