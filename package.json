@@ -1,6 +1,6 @@
 {
   "name": "botbuilder-mongo-storage",
-  "version": "1.0.6",
+  "version": "1.0.7",
   "description": "Botbuilder MongoDB (+Redis Cached) Storage",
   "main": "./lib/index.js",
   "typings": "./lib/index.d.ts",
@@ -12,6 +12,7 @@
     "botbuilder",
     "storage",
     "mongo",
+    "store",
     "redis",
     "botstorage",
     "botframework",
@@ -22,7 +23,7 @@
   "license": "GPL-3.0",
   "dependencies": {
     "@node-redis/client": "^1.0.6",
-    "mongodb": "^4.5.0"
+    "mongodb": "^4.9.1"
   },
   "files": [
     "/lib",
